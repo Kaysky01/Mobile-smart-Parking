@@ -1,0 +1,45 @@
+name: parking_sistem
+description: "MyParking student application for an RFID smart parking system."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  dio: ^5.9.0
+  flutter_secure_storage: ^10.0.0
+  google_fonts: ^8.0.2
+  image_picker: ^1.2.1
+  intl: ^0.20.2
+  provider: ^6.1.5+1
+  qr_flutter: ^4.1.0
+  shared_preferences: ^2.5.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - lib/assets/logo parking.png
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "lib/assets/logo parking.png"
+
+flutter_native_splash:
+  color: "#1D4ED8"
+  image: "lib/assets/logo parking.png"
+  android: true
+  ios: true
