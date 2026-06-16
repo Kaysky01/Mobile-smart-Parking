@@ -57,7 +57,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     // Filter approved top-ups
     final approved = controller.topUps
         .where((item) => item.status == 'approved')
-        .take(3);
+        .take(3).toList();
+
+    // Filter rejected top-ups
+    final rejected = controller.topUps
+        .where((item) => item.status == 'rejected')
+        .take(3).toList();
+
+    // Combine and sort by date descending
+    final combinedTopUps = [...approved, ...rejected];
+    combinedTopUps.sort((a, b) {
+      if (a.createdAt == null) return 1;
+      if (b.createdAt == null) return -1;
+      return b.createdAt!.compareTo(a.createdAt!);
+    });
 
     // Only show parking success if there is parking history
     final showParkingHistory = controller.parkingHistory.isNotEmpty;
@@ -70,19 +83,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           title: 'Low balance warning',
           message: 'Top up soon to keep your RFID card ready for parking.',
           isRead: _lastReadTime != null,
-        ),
-      for (final item in approved)
-        _NotificationTile(
-          icon: Icons.check_circle_outline_rounded,
-          color: AppColors.success,
-          title: 'Top up approved',
-          message:
-              '${formatCurrency(item.amount)} was approved on ${formatDate(item.createdAt)}.',
-          isRead:
-              _lastReadTime != null &&
-              item.createdAt != null &&
-              (item.createdAt!.isBefore(_lastReadTime!) ||
-                  item.createdAt!.isAtSameMomentAs(_lastReadTime!)),
         ),
       if (showParkingHistory)
         _NotificationTile(
@@ -101,6 +101,33 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     _lastReadTime!,
                   )),
         ),
+      for (final item in combinedTopUps)
+        if (item.status == 'approved')
+          _NotificationTile(
+            icon: Icons.check_circle_outline_rounded,
+            color: AppColors.success,
+            title: 'Top up approved',
+            message:
+                '${formatCurrency(item.amount)} was approved on ${formatDate(item.createdAt)}.',
+            isRead:
+                _lastReadTime != null &&
+                item.createdAt != null &&
+                (item.createdAt!.isBefore(_lastReadTime!) ||
+                    item.createdAt!.isAtSameMomentAs(_lastReadTime!)),
+          )
+        else if (item.status == 'rejected')
+          _NotificationTile(
+            icon: Icons.cancel_outlined,
+            color: AppColors.danger,
+            title: 'Top up rejected',
+            message:
+                'Your top up request for ${formatCurrency(item.amount)} on ${formatDate(item.createdAt)} was rejected.${item.rejectionReason != null && item.rejectionReason!.isNotEmpty ? ' Reason: ${item.rejectionReason}' : ''}',
+            isRead:
+                _lastReadTime != null &&
+                item.createdAt != null &&
+                (item.createdAt!.isBefore(_lastReadTime!) ||
+                    item.createdAt!.isAtSameMomentAs(_lastReadTime!)),
+          ),
     ];
 
     return Scaffold(

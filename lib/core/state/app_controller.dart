@@ -75,7 +75,18 @@ class AppController extends ChangeNotifier {
     final approvedTopUps = topUps
         .where((item) => item.status == 'approved')
         .take(3);
-    final hasUnreadTopups = approvedTopUps.any(
+    final rejectedTopUps = topUps
+        .where((item) => item.status == 'rejected')
+        .take(3);
+
+    final hasUnreadApproved = approvedTopUps.any(
+      (item) =>
+          lastReadNotificationTime == null ||
+          (item.createdAt != null &&
+              item.createdAt!.isAfter(lastReadNotificationTime!)),
+    );
+
+    final hasUnreadRejected = rejectedTopUps.any(
       (item) =>
           lastReadNotificationTime == null ||
           (item.createdAt != null &&
@@ -93,7 +104,10 @@ class AppController extends ChangeNotifier {
     final hasUnreadBalanceWarning =
         balance < 10000 && lastReadNotificationTime == null;
 
-    return hasUnreadTopups || hasUnreadParking || hasUnreadBalanceWarning;
+    return hasUnreadApproved ||
+        hasUnreadRejected ||
+        hasUnreadParking ||
+        hasUnreadBalanceWarning;
   }
 
   Future<bool> login(String npm, String password) async {

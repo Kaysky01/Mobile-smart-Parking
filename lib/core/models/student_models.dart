@@ -85,6 +85,7 @@ class TopUpRequest {
     required this.id,
     required this.amount,
     required this.status,
+    this.rejectionReason,
     required this.createdAt,
   });
 
@@ -92,12 +93,14 @@ class TopUpRequest {
     id: (json['id'] ?? json['topup_id'] ?? '-').toString(),
     amount: asDouble(json['amount'] ?? json['nominal']),
     status: (json['status'] ?? 'pending').toString().toLowerCase(),
+    rejectionReason: json['rejection_reason'] as String?,
     createdAt: asDateTime(json['created_at'] ?? json['date']),
   );
 
   final String id;
   final double amount;
   final String status;
+  final String? rejectionReason;
   final DateTime? createdAt;
 }
 
