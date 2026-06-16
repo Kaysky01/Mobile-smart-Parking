@@ -11,6 +11,13 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
+.gitignore
+
+# Agent & AI Tooling
+.claude/
+.claude
+.kilo/
+.kilo
 
 # IntelliJ related
 *.iml

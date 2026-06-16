@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../features/auth/data/auth_repository.dart';
 import '../data/student_repository.dart';
@@ -24,6 +25,7 @@ class AppController extends ChangeNotifier {
   bool isLoading = false;
   bool isSubmitting = false;
   String? errorMessage;
+  DateTime? lastReadNotificationTime;
 
   Future<void> restoreSession() async {
     final token = await _storage.readToken();
@@ -47,6 +49,51 @@ class AppController extends ChangeNotifier {
       return;
     }
     await refresh(includeProfile: false);
+  }
+
+  Future<void> loadLastReadNotificationTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    final timestamp = prefs.getInt('notifications_last_read_time');
+    if (timestamp != null) {
+      lastReadNotificationTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+      notifyListeners();
+    }
+  }
+
+  Future<void> markNotificationsAsRead() async {
+    final prefs = await SharedPreferences.getInstance();
+    final now = DateTime.now();
+    await prefs.setInt(
+      'notifications_last_read_time',
+      now.millisecondsSinceEpoch,
+    );
+    lastReadNotificationTime = now;
+    notifyListeners();
+  }
+
+  bool get hasUnreadNotifications {
+    final approvedTopUps = topUps
+        .where((item) => item.status == 'approved')
+        .take(3);
+    final hasUnreadTopups = approvedTopUps.any(
+      (item) =>
+          lastReadNotificationTime == null ||
+          (item.createdAt != null &&
+              item.createdAt!.isAfter(lastReadNotificationTime!)),
+    );
+
+    final hasUnreadParking =
+        parkingHistory.isNotEmpty &&
+        (lastReadNotificationTime == null ||
+            (parkingHistory.first.entryTime != null &&
+                parkingHistory.first.entryTime!.isAfter(
+                  lastReadNotificationTime!,
+                )));
+
+    final hasUnreadBalanceWarning =
+        balance < 10000 && lastReadNotificationTime == null;
+
+    return hasUnreadTopups || hasUnreadParking || hasUnreadBalanceWarning;
   }
 
   Future<bool> login(String npm, String password) async {

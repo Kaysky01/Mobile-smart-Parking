@@ -4,7 +4,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../../../core/models/student_models.dart';
 import '../../../core/state/app_controller.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
@@ -197,31 +196,68 @@ class _AmountStep extends StatelessWidget {
             color: Colors.transparent,
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(22),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(28),
                 gradient: const LinearGradient(
-                  colors: [AppColors.primary, AppColors.secondary],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF1D4ED8), Color(0xFF60A5FA)],
                 ),
-                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.28),
+                    blurRadius: 28,
+                    offset: const Offset(0, 14),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'CURRENT BALANCE',
-                    style: TextStyle(
-                      color: AppColors.lightBlue,
-                      fontSize: 11,
-                      letterSpacing: 1.2,
-                    ),
+                  Row(
+                    children: [
+                      const Expanded(
+                        child: Text(
+                          'RFID BALANCE',
+                          style: TextStyle(
+                            color: Color(0xFFDBEAFE),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 1.3,
+                          ),
+                        ),
+                      ),
+                      StatusBadge(
+                        status: controller.profile?.rfidStatus ?? '-',
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   Text(
                     formatCurrency(controller.balance),
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w800,
                     ),
+                  ),
+                  const SizedBox(height: 26),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _WalletDetail(
+                          label: 'CARD ID',
+                          value: controller.profile?.rfidUid ?? '-',
+                        ),
+                      ),
+                      Expanded(
+                        child: _WalletDetail(
+                          label: 'PLATE NUMBER',
+                          value: controller.profile?.plateNumber ?? '-',
+                          alignEnd: true,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -288,24 +324,6 @@ class _AmountStep extends StatelessWidget {
           icon: const Icon(Icons.qr_code_2_rounded),
           label: const Text('Lanjut ke Pembayaran'),
         ),
-        const SizedBox(height: 30),
-        const SectionHeader(title: 'Riwayat top-up'),
-        const SizedBox(height: 12),
-        if (controller.topUps.isEmpty)
-          const AppCard(
-            child: EmptyState(
-              icon: Icons.add_card_outlined,
-              title: 'Belum ada top-up',
-              message: 'Permintaan top-up akan ditampilkan di sini.',
-            ),
-          )
-        else
-          ...controller.topUps.map(
-            (item) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _TopUpCard(item: item),
-            ),
-          ),
       ],
     );
   }
@@ -518,48 +536,43 @@ class _PaymentStep extends StatelessWidget {
   }
 }
 
-class _TopUpCard extends StatelessWidget {
-  const _TopUpCard({required this.item});
+class _WalletDetail extends StatelessWidget {
+  const _WalletDetail({
+    required this.label,
+    required this.value,
+    this.alignEnd = false,
+  });
 
-  final TopUpRequest item;
+  final String label;
+  final String value;
+  final bool alignEnd;
 
   @override
   Widget build(BuildContext context) {
-    return AppCard(
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: AppColors.lightBlue,
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: const Icon(Icons.add_rounded, color: AppColors.primary),
+    return Column(
+      crossAxisAlignment: alignEnd
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: Color(0xFFDBEAFE),
+            fontSize: 10,
+            letterSpacing: 1,
           ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  formatCurrency(item.amount),
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  '${formatDate(item.createdAt)}  •  #${item.id}',
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 11,
-                  ),
-                ),
-              ],
-            ),
+        ),
+        const SizedBox(height: 3),
+        Text(
+          value,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
           ),
-          StatusBadge(status: item.status),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

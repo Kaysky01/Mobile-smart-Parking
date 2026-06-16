@@ -54,13 +54,14 @@ class _LoginScreenState extends State<LoginScreen> {
               return SingleChildScrollView(
                 physics: const ClampingScrollPhysics(),
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight,
-                  ),
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: IntrinsicHeight(
                     child: Center(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24.0,
+                          vertical: 32.0,
+                        ),
                         child: ConstrainedBox(
                           constraints: const BoxConstraints(maxWidth: 400),
                           child: Column(
@@ -74,22 +75,31 @@ class _LoginScreenState extends State<LoginScreen> {
                                   borderRadius: BorderRadius.circular(24),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.15),
+                                      color: Colors.black.withValues(
+                                        alpha: 0.15,
+                                      ),
                                       blurRadius: 30,
                                       offset: const Offset(0, 15),
                                     ),
                                   ],
                                 ),
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24.0,
+                                    vertical: 32.0,
+                                  ),
                                   child: Form(
                                     key: _formKey,
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           'Welcome Back',
-                                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge
+                                              ?.copyWith(
                                                 fontWeight: FontWeight.w800,
                                                 color: AppColors.text,
                                                 fontSize: 22,
@@ -112,10 +122,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                           decoration: const InputDecoration(
                                             labelText: 'NPM',
                                             hintText: 'Enter your NPM',
-                                            prefixIcon: Icon(Icons.badge_outlined),
+                                            prefixIcon: Icon(
+                                              Icons.badge_outlined,
+                                            ),
                                           ),
                                           validator: (value) =>
-                                              value == null || value.trim().isEmpty
+                                              value == null ||
+                                                  value.trim().isEmpty
                                               ? 'NPM is required'
                                               : null,
                                         ),
@@ -128,16 +141,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                           decoration: InputDecoration(
                                             labelText: 'Password',
                                             hintText: 'Enter your password',
-                                            prefixIcon: const Icon(Icons.lock_outline),
+                                            prefixIcon: const Icon(
+                                              Icons.lock_outline,
+                                            ),
                                             suffixIcon: IconButton(
                                               onPressed: () => setState(
-                                                () =>
-                                                    _obscurePassword = !_obscurePassword,
+                                                () => _obscurePassword =
+                                                    !_obscurePassword,
                                               ),
                                               icon: Icon(
                                                 _obscurePassword
                                                     ? Icons.visibility_outlined
-                                                    : Icons.visibility_off_outlined,
+                                                    : Icons
+                                                          .visibility_off_outlined,
                                               ),
                                             ),
                                           ),
@@ -146,20 +162,23 @@ class _LoginScreenState extends State<LoginScreen> {
                                               ? 'Password is required'
                                               : null,
                                         ),
-                                        if (controller.errorMessage != null) ...[
+                                        if (controller.errorMessage !=
+                                            null) ...[
                                           const SizedBox(height: 16),
                                           Container(
                                             width: double.infinity,
-                                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 12,
+                                            ),
                                             decoration: BoxDecoration(
-                                              color: AppColors.danger.withValues(
-                                                alpha: 0.08,
-                                              ),
-                                              borderRadius: BorderRadius.circular(12),
+                                              color: AppColors.danger
+                                                  .withValues(alpha: 0.08),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
                                               border: Border.all(
-                                                color: AppColors.danger.withValues(
-                                                  alpha: 0.20,
-                                                ),
+                                                color: AppColors.danger
+                                                    .withValues(alpha: 0.20),
                                                 width: 1,
                                               ),
                                             ),
@@ -177,7 +196,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                                     style: const TextStyle(
                                                       color: AppColors.danger,
                                                       fontSize: 13,
-                                                      fontWeight: FontWeight.w500,
+                                                      fontWeight:
+                                                          FontWeight.w500,
                                                     ),
                                                   ),
                                                 ),
@@ -193,10 +213,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                           child: controller.isSubmitting
                                               ? const SizedBox.square(
                                                   dimension: 22,
-                                                  child: CircularProgressIndicator(
-                                                    strokeWidth: 2.5,
-                                                    color: Colors.white,
-                                                  ),
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                        strokeWidth: 2.5,
+                                                        color: Colors.white,
+                                                      ),
                                                 )
                                               : const Text('Login'),
                                         ),

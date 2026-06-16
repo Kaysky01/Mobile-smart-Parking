@@ -19,7 +19,7 @@ class TransactionsScreen extends StatefulWidget {
 }
 
 class _TransactionsScreenState extends State<TransactionsScreen> {
-  TransactionFilter _filter = TransactionFilter.all;
+  final TransactionFilter _filter = TransactionFilter.all;
 
   @override
   Widget build(BuildContext context) {
@@ -32,56 +32,29 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       };
     }).toList();
 
-    final content = Column(
-      children: [
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-          child: SegmentedButton<TransactionFilter>(
-            segments: const [
-              ButtonSegment(value: TransactionFilter.all, label: Text('All')),
-              ButtonSegment(
-                value: TransactionFilter.parking,
-                label: Text('Parking'),
+    final content = RefreshIndicator(
+      onRefresh: controller.refresh,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 120),
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          if (items.isEmpty)
+            const AppCard(
+              child: EmptyState(
+                icon: Icons.receipt_long_outlined,
+                title: 'No transactions',
+                message: 'Parking payments and top ups appear here.',
               ),
-              ButtonSegment(
-                value: TransactionFilter.topup,
-                label: Text('Top Up'),
+            )
+          else
+            ...items.map(
+              (item) => Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _TransactionCard(item: item),
               ),
-            ],
-            selected: {_filter},
-            onSelectionChanged: (value) =>
-                setState(() => _filter = value.first),
-            showSelectedIcon: false,
-          ),
-        ),
-        Expanded(
-          child: RefreshIndicator(
-            onRefresh: controller.refresh,
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 4, 20, 120),
-              physics: const AlwaysScrollableScrollPhysics(),
-              children: [
-                if (items.isEmpty)
-                  const AppCard(
-                    child: EmptyState(
-                      icon: Icons.receipt_long_outlined,
-                      title: 'No transactions',
-                      message: 'Parking payments and top ups appear here.',
-                    ),
-                  )
-                else
-                  ...items.map(
-                    (item) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: _TransactionCard(item: item),
-                    ),
-                  ),
-              ],
             ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
 
     if (widget.embedded) return content;

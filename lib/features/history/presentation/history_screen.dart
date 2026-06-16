@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../parking_history/presentation/parking_history_screen.dart';
 import '../../transactions/presentation/transactions_screen.dart';
+import 'topup_history_screen.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
@@ -9,7 +10,7 @@ class HistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('History'),
@@ -18,6 +19,7 @@ class HistoryScreen extends StatelessWidget {
             tabs: [
               Tab(text: 'Parking'),
               Tab(text: 'Transactions'),
+              Tab(text: 'Top Up'),
             ],
           ),
         ),
@@ -25,6 +27,7 @@ class HistoryScreen extends StatelessWidget {
           children: [
             ParkingHistoryScreen(embedded: true),
             TransactionsScreen(embedded: true),
+            TopUpHistoryScreen(),
           ],
         ),
       ),

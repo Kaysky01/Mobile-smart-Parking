@@ -8,10 +8,23 @@ import '../../../core/widgets/app_widgets.dart';
 import '../../notifications/presentation/notifications_screen.dart';
 import '../../transactions/presentation/transactions_screen.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key, required this.onSelectTab});
 
   final ValueChanged<int> onSelectTab;
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AppController>().loadLastReadNotificationTime();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,11 +83,7 @@ class DashboardScreen extends StatelessWidget {
                               ),
                             ),
                             icon: Badge(
-                              isLabelVisible:
-                                  controller.topUps.any(
-                                    (item) => item.status == 'approved',
-                                  ) ||
-                                  controller.balance < 10000,
+                              isLabelVisible: controller.hasUnreadNotifications,
                               child: const Icon(Icons.notifications_outlined),
                             ),
                           ),
@@ -109,7 +118,7 @@ class DashboardScreen extends StatelessWidget {
                             child: _QuickAction(
                               icon: Icons.add_card_rounded,
                               label: 'Top Up',
-                              onTap: () => onSelectTab(1),
+                              onTap: () => widget.onSelectTab(1),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -117,7 +126,7 @@ class DashboardScreen extends StatelessWidget {
                             child: _QuickAction(
                               icon: Icons.local_parking_rounded,
                               label: 'Parking',
-                              onTap: () => onSelectTab(2),
+                              onTap: () => widget.onSelectTab(2),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -137,7 +146,7 @@ class DashboardScreen extends StatelessWidget {
                             child: _QuickAction(
                               icon: Icons.person_rounded,
                               label: 'Profile',
-                              onTap: () => onSelectTab(3),
+                              onTap: () => widget.onSelectTab(3),
                             ),
                           ),
                         ],
